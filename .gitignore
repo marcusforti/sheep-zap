@@ -1,0 +1,5 @@
+__pycache__/
+*.pyc
+.env
+# Lista local do teste de privacidade: tem nomes reais e nunca vai para o GitHub.
+tests/proibidos.local.txt
