@@ -50,6 +50,8 @@ class Falsa:
                 if rota == "/chat/findMessages":
                     return self._responder(falsa.buscar(corpo))
                 if rota in ("/message/sendText", "/message/sendWhatsAppAudio", "/message/sendMedia", "/message/sendPoll"):
+                    if rota == "/message/sendWhatsAppAudio" and str(corpo.get("number")).endswith("@lid"):
+                        return self._responder({"erro": "Bad Request"}, 400)   # medido na real em 01/11/2026
                     if falsa.falhas_de_envio > 0:
                         falsa.falhas_de_envio -= 1
                         return self._responder({"erro": "fora do ar"}, 503)

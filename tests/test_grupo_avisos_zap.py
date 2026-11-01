@@ -237,6 +237,21 @@ class TestZap(Mundo):
         self.assertIn("oi, tudo bem?", linhas[0])
         self.assertIn("tudo sim", linhas[1])
 
+    def test_audio_para_endereco_lid_sai_pelo_numero_da_pessoa(self):
+        import zap
+        self.cfg["limites"]["segundos_entre_envios"] = 0
+        arq = self.tmp / "a.mp3"
+        arq.write_bytes(b"audio")
+        self.falsa.chega("777@lid", "oi", alt="5500922222222@s.whatsapp.net", nome="Ana")
+        zap.enviar(self.cfg, self.evo, "777@lid", "audio", [str(arq)], verificar=False)
+        self.assertEqual(self.falsa.enviadas[-1]["para"], "5500922222222")
+
+    def test_texto_para_endereco_lid_continua_igual(self):
+        import zap
+        self.cfg["limites"]["segundos_entre_envios"] = 0
+        zap.enviar(self.cfg, self.evo, "777@lid", "texto", ["oi"], verificar=False)
+        self.assertEqual(self.falsa.enviadas[-1]["para"], "777@lid")
+
     def test_situacao_de_entrega_le_message_update(self):
         s = self.nucleo.status_entrega
         self.assertEqual(s({"MessageUpdate": [{"status": "SERVER_ACK"}, {"status": "DELIVERY_ACK"}, {"status": "READ"}], "status": None}), "lido")

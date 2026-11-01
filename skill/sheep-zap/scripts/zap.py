@@ -26,12 +26,20 @@ def _destino(cfg, valor):
 def enderecos(evo, jid):
     """A mesma pessoa pode ter dois endereços: o que ela escreve fica em um, e o que sai para ela, em outro."""
     achados = {jid}
-    for x in evo.recentes(1, 200):
+    for x in evo.recentes(1, 200) + evo.mensagens(jid, 20):
         k = x["key"]
         par = {j for j in (k.get("remoteJid"), k.get("remoteJidAlt")) if j}
         if achados & par:
             achados |= par
     return achados
+
+
+def destino_real(evo, destino, modo):
+    """A Evolution recusa áudio para endereço @lid (HTTP 400): manda para o número da pessoa."""
+    if modo == "texto" or not destino.endswith("@lid"):
+        return destino
+    numero = next((j for j in enderecos(evo, destino) if j.endswith("@s.whatsapp.net")), None)
+    return numero.split("@")[0] if numero else destino
 
 
 def conversa(evo, jid, desde):
@@ -74,6 +82,7 @@ def enviar(cfg, evo, destino, modo, args, verificar=True):
     if estado != "open":
         sys.exit(f"Não enviei: a instância {evo.instancia} está {estado}. Reconecte lendo o QR Code.")
     _no_ritmo(cfg, evo)
+    destino = destino_real(evo, destino, modo)
     if modo == "texto":
         r = evo.texto(destino, args[0])
     elif modo == "audio":
