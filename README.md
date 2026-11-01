@@ -18,6 +18,8 @@ curl -fsSL https://raw.githubusercontent.com/marcusforti/sheep-zap/main/instalar
 
 Depois abra o Claude Code e escreva `/sheep-zap`. Ele guia a instalação, uma etapa por vez.
 
+**Quer ver antes de instalar?** A página mostra o caminho de uma mensagem e o grafo com todas as peças: https://marcusforti.github.io/sheep-zap/
+
 ## O que precisa
 
 - Claude Code com login feito. Esta versão ainda não funciona só com o Codex.
@@ -71,4 +73,5 @@ flowchart TD
 | `skill/sheep-zap/scripts/` | Os serviços. Só biblioteca padrão do Python |
 | `skill/sheep-zap/modelos/` | Prompts que viram os seus na instalação |
 | `skill/sheep-zap/references/` | Instalação guiada, operação e problemas |
+| `docs/` | A página, com o fluxo e o grafo da skill |
 | `tests/` | Testes com uma Evolution e um Claude de mentira. Rode com `python -m unittest discover -s tests` |

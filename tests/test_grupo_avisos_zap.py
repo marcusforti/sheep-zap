@@ -83,6 +83,12 @@ class TestGrupo(Mundo):
         self.fala("segunda", ts=agora)
         self.assertEqual(len(v.filtrar(self.evo.mensagens(GRUPO, 40))), 1)
 
+    def test_arquivo_postado_no_grupo_nao_e_baixado(self):
+        v = self.vigia({"responder": False, "texto": "", "avisar_dono": ""})
+        self.falsa.chega(GRUPO, tipo="documentMessage", mensagem={"documentMessage": {"fileName": "contrato.pdf"}}, nome="Ana", participante="777@lid")
+        v.passo()
+        self.assertFalse(any("getBase64" in p[1] for p in self.falsa.pedidos))
+
     def test_nome_so_de_emoji_nao_divide_regras(self):
         from grupo import slug
         self.assertNotEqual(slug("🔥🔥", "120000000000000001@g.us"), slug("🚀", "120000000000000002@g.us"))

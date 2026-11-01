@@ -8,7 +8,7 @@ import sys
 import time
 from datetime import datetime
 
-from nucleo import (IGNORAR, ErroConfig, batimento, casa, config, digitos, evolution_agente, extrair_json, gravar_json, ids_da_chave, ids_do_dono, ler_json,
+from nucleo import (IGNORAR, ErroConfig, abrir, batimento, casa, config, digitos, evolution_agente, extrair_json, gravar_json, ids_da_chave, ids_do_dono, ler_json,
                     pensar, registrar, segredo, sub, texto_puro, trava, ts)
 from midia import conteudo
 
@@ -52,7 +52,8 @@ class Vigia:
         quem = "Eu" if x["key"].get("fromMe") else (x.get("pushName") or "Alguém")
         if ids_da_chave(x["key"]) & self.ids_dono:
             quem = self.cfg["dono"]["nome"]
-        texto = conteudo(x, self.evo) if cheio else (texto_puro(x) or "[mídia]")
+        # Só áudio é baixado, para virar texto. Este modelo não tem ferramenta para abrir arquivo: baixar seria só risco.
+        texto = conteudo(x, self.evo) if cheio and abrir(x)[0] == "audioMessage" else (texto_puro(x) or "[mídia]")
         return f"{datetime.fromtimestamp(ts(x)):%d/%m %H:%M} {quem}: {texto[:600]}".replace("\n", " / ")
 
     def decidir(self, contexto, novas):

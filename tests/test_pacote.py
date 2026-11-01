@@ -29,8 +29,9 @@ FALSO = re.compile(r"^5500\d{9}(@s\.whatsapp\.net)?$")
 
 
 def arquivos():
+    # Fonte, imagem e biblioteca de terceiros não têm texto nosso: varrer só daria falso alarme.
     for p in RAIZ.rglob("*"):
-        if p.is_file() and not {"__pycache__", ".git"} & set(p.parts) and p.suffix != ".pyc":
+        if p.is_file() and not {"__pycache__", ".git", "graphify-out", "fontes", "img", "vendor"} & set(p.parts) and p.suffix != ".pyc":
             yield p
 
 
@@ -53,6 +54,14 @@ class TestSemDadosPessoais(unittest.TestCase):
         for linha in (LOCAL.read_text(encoding="utf-8").splitlines() if LOCAL.exists() else []):
             if linha.strip() and not linha.startswith("#") and "\\" not in linha and "(" not in linha:
                 self.assertNotIn(linha.lower(), texto)
+
+    def test_pagina_aponta_para_o_que_existe(self):
+        pasta = RAIZ / "docs"
+        html = (pasta / "index.html").read_text(encoding="utf-8")
+        for alvo in re.findall(r'(?:src|href)="([^"#:]+)"', html) + re.findall(r'url\(([^)#:]+?)\)', html):
+            self.assertTrue((pasta / alvo).exists(), alvo)
+        self.assertIn("marcusforti/sheep-zap/main/instalar.ps1", html)
+        self.assertIn("marcusforti/sheep-zap/main/instalar.sh", html)
 
     def test_skill_tem_nome_e_descricao_validos(self):
         cabeca = (RAIZ / "skill/sheep-zap/SKILL.md").read_text(encoding="utf-8").split("---")[1]
